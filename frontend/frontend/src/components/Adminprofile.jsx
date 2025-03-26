@@ -67,7 +67,7 @@ const AdminProfile = () => {
 
   // Loading and error states
   if (loading) return <div className="text-center mt-10 text-gray-600">Loading...</div>;
-  if (!admin) return <div className="text-center mt-10 text-red-500">Profile not found.</div>;
+  if (!admin) return <div className="text-center mt-10 text-red-500">Profile not found</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
