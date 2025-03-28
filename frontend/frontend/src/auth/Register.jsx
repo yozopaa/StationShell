@@ -5,18 +5,41 @@ import React, { useState } from 'react';
 function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState([]);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setErrors([]);
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    let validationErrors = [];
+
+    // Client-side password validations
+    if (trimmedPassword.length < 8) {
+      validationErrors.push('Password must be at least 8 characters long');
+    }
+    if (!/\d/.test(trimmedPassword)) {
+      validationErrors.push('Password must contain at least one number');
+    }
+    const localPart = trimmedEmail.split('@')[0];
+    if (trimmedPassword.toLowerCase().includes(localPart.toLowerCase())) {
+      validationErrors.push('Password should not contain your email username');
+    }
+
+    // If there are validation errors, display them and stop submission
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    // Proceed with server-side registration
     try {
-      await authService.register(email, password);
+      await authService.register(trimmedEmail, trimmedPassword);
       console.log("Register success");
       navigate('/login');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setErrors([err.response?.data?.message || 'Registration failed']);
       console.error(err);
     }
   };
@@ -25,7 +48,13 @@ function Register() {
     <div className="bg-red-900 min-h-screen flex justify-center items-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Admin Dashboard</h1>
-        {error && <div className="text-red-600 text-center mb-4">{error}</div>}
+        {errors.length > 0 && (
+          <ul className="text-red-600 text-center mb-4">
+            {errors.map((err, index) => (
+              <li key={index}>{err}</li>
+            ))}
+          </ul>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>

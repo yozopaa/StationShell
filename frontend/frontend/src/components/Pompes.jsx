@@ -146,10 +146,11 @@ const Pompes = () => {
             <thead>
               <tr className="bg-gray-200 text-gray-700">
                 <th className="p-3 text-center">Numéro</th>
-                <th className="p-3 text-center">Statut</th>
+                
                 <th className="p-3 text-center">Débit</th>
                 <th className="p-3 text-center">Employé</th>
                 <th className="p-3 text-center">Station</th> {/* New column */}
+                <th className="p-3 text-center">Statut</th>
                 <th className="p-3 text-center">Actions</th>
               </tr>
             </thead>
@@ -157,6 +158,10 @@ const Pompes = () => {
               {sortedPompes.map((pompe, index) => (
                 <tr key={index} className="border-b hover:bg-gray-100">
                   <td className="p-3">{pompe.Numero}</td>
+                  
+                  <td className="p-3">{pompe.Debit}</td>
+                  <td className="p-3">{pompe.Employee}</td>
+                  <td className="p-3">{pompe.station?.NomStation || 'N/A'}</td> {/* Display station */}
                   <td className="p-3 flex items-center justify-center">
                     {pompe.Statut === 'Actif' ? (
                       <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
@@ -165,9 +170,6 @@ const Pompes = () => {
                     )}
                     {pompe.Statut}
                   </td>
-                  <td className="p-3">{pompe.Debit}</td>
-                  <td className="p-3">{pompe.Employee}</td>
-                  <td className="p-3">{pompe.station?.NomStation || 'N/A'}</td> {/* Display station */}
                   <td className="p-3">
                     <div className="flex justify-center space-x-2">
                       <button 

@@ -151,7 +151,7 @@ const Produits = () => {
                 <th className="p-3 text-center">Nom Produit</th>
                 <th className="p-3 text-center">Type</th>
                 <th className="p-3 text-center">Date d'Ajout</th>
-                <th className="p-3 text-center">Unité</th>
+                <th className="p-3 text-center">Stock</th>
                 <th className="p-3 text-center">Station</th> {/* New column */}
                 <th className="p-3 text-center">Actions</th>
               </tr>

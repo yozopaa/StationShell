@@ -203,6 +203,7 @@ const EmployeeFormModal = ({ employee, onSave, onClose }) => {
             >
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
+              <option value="Quitter">Quitter</option>
             </select>
           </div>
           <div>

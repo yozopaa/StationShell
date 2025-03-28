@@ -121,14 +121,18 @@ const ProduitFormModal = ({ produit, onSave, onClose }) => {
           </div>
           <div>
             <label className="block text-sm text-gray-600">Type</label>
-            <input
-              type="text"
+            <select
               name="Type"
               value={formData.Type}
               onChange={handleChange}
               required
               className="w-full p-2 border rounded"
-            />
+            >
+              <option value="">Sélectionner un type</option>
+              <option value="Service">Service </option>
+              <option value="Carburant">Carburant</option>
+              <option value="Produit">Produit</option>
+            </select>
           </div>
           <div>
             <label className="block text-sm text-gray-600">Date d'ajout</label>
@@ -142,7 +146,7 @@ const ProduitFormModal = ({ produit, onSave, onClose }) => {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600">Unité</label>
+            <label className="block text-sm text-gray-600">Stock</label>
             <input
               type="text"
               name="Unite"
@@ -167,6 +171,20 @@ const ProduitFormModal = ({ produit, onSave, onClose }) => {
                   {station.NomStation}
                 </option>
               ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">Statut</label>
+            <select
+              name="Statut"
+              value={formData.Statut}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Sélectionner...</option>
+              <option value="Actif">Actif</option>
+              <option value="Inactif">Inactif</option>
             </select>
           </div>
           <div className="flex justify-end space-x-2 pt-4">

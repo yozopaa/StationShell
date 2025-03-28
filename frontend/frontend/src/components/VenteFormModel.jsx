@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { venteService, employeeService, stationService } from '../service/api';
+import { venteService, employeeService, stationService, produitService } from '../service/api';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -12,18 +12,22 @@ const VenteFormModal = ({ vente, onSave, onClose }) => {
     DateVente: '',
     ModePaiement: '',
     TypeVente: '',
+    ProduitNom: '', // Changed to ProduitNom to store product ID
     PrixVente: '',
-    station: '' // Added station field
+    station: ''
   });
   const [error, setError] = useState('');
   const [employees, setEmployees] = useState([]);
-  const [stations, setStations] = useState([]); // Added stations state
+  const [produits, setProduits] = useState([]);
+  const [stations, setStations] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const employeeData = await employeeService.getAllEmployees();
         const stationData = await stationService.getAllStations();
+        const produitData = await produitService.getAllProduits();
+        setProduits(produitData);
         setEmployees(employeeData);
         setStations(stationData);
       } catch (error) {
@@ -42,7 +46,8 @@ const VenteFormModal = ({ vente, onSave, onClose }) => {
         ModePaiement: vente.ModePaiement || '',
         PrixVente: vente.PrixVente || '',
         TypeVente: vente.TypeVente || '',
-        station: vente.station?._id || vente.station || '' // Handle station as ObjectId
+        ProduitNom: vente.ProduitNom?._id || vente.ProduitNom || '', // Set to product ID
+        station: vente.station?._id || vente.station || ''
       });
     } else {
       setFormData({
@@ -52,6 +57,7 @@ const VenteFormModal = ({ vente, onSave, onClose }) => {
         ModePaiement: '',
         TypeVente: '',
         PrixVente: '',
+        ProduitNom: '',
         station: ''
       });
     }
@@ -87,8 +93,9 @@ const VenteFormModal = ({ vente, onSave, onClose }) => {
         DateVente: new Date(formData.DateVente).toISOString(),
         ModePaiement: formData.ModePaiement,
         TypeVente: formData.TypeVente,
+        ProduitNom: formData.ProduitNom, // Send product ID
         PrixVente: Number(formData.PrixVente),
-        station: formData.station // Station ID
+        station: formData.station
       };
       if (vente) {
         await venteService.updateVente(vente._id, submissionData);
@@ -162,16 +169,39 @@ const VenteFormModal = ({ vente, onSave, onClose }) => {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600">Type Vendu</label>
-            <input
-              type="text"
+               <label className="block text-sm text-gray-600">Type Vente</label>
+            <select
               name="TypeVente"
               value={formData.TypeVente}
               onChange={handleChange}
               required
               className="w-full p-2 border rounded"
-              placeholder="Ex: Gasoile"
-            />
+            >
+              <option value="">Sélectionner un type</option>
+              <option value="Servic">Service </option>
+              <option value="Carburant">Carburant</option>
+              <option value="Produit">Produit</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">Produit</label>
+            <select
+              name="ProduitNom"
+              value={formData.ProduitNom}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Sélectionner un produit</option>
+              {produits.map((p) => (
+                <option 
+                  key={p._id} 
+                  value={p._id}
+                >
+                  {p.NomProduit}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-sm text-gray-600">Date de Vente</label>

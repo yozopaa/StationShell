@@ -185,23 +185,23 @@ const Employees = () => {
                   <td className="border p-2">
                     <div className="flex justify-center space-x-2">
                       <button 
-                        className="bg-red-600 text-white py-1 px-3 rounded text-sm"
+                        className="bg-blue-500 text-white py-1 px-3 rounded text-sm"
                         onClick={() => handleEditClick(employee)}
                       >
                         Modifier
                       </button>
-                      <button 
+                     {/* <button 
                         className="bg-gray-800 text-white py-1 px-3 rounded text-sm"
                         onClick={() => handleDelete(employee._id)}
                       >
                         Supprimer
-                      </button>
+                      </button> */}
                     </div>
                   </td>
                 </tr>
               ))
             )}
-          </tbody>
+          </tbody> 
         </table>
       </div>
 
