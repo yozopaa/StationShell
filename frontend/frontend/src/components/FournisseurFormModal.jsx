@@ -15,7 +15,7 @@ const FournisseurFormModal = ({ fournisseur, onSave, onClose }) => {
     ContactFournisseur: ''
   });
   const [error, setError] = useState('');
-
+  
   useEffect(() => {
     if (fournisseur) {
       setFormData({
@@ -78,7 +78,12 @@ const FournisseurFormModal = ({ fournisseur, onSave, onClose }) => {
   };
 
   return (
+    <>
+
+  
+   
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+   
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4">
           {fournisseur ? 'Modifier Fournisseur' : 'Ajouter Fournisseur'}
@@ -175,6 +180,7 @@ const FournisseurFormModal = ({ fournisseur, onSave, onClose }) => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

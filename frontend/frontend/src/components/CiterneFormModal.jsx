@@ -11,9 +11,9 @@ const CiterneFormModal = ({ citerne, onSave, onClose }) => {
     DateInstallation: '',
     TypeCarburant: '',
     Statut: '',
-    station: '' // Added station field
+    station: ''
   });
-  const [stations, setStations] = useState([]); // State for station list
+  const [stations, setStations] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const CiterneFormModal = ({ citerne, onSave, onClose }) => {
           : '',
         TypeCarburant: citerne.TypeCarburant || '',
         Statut: citerne.Statut || '',
-        station: citerne.station?._id || '' // Pre-fill station if editing
+        station: citerne.station?._id || ''
       });
     } else {
       setFormData({
@@ -75,7 +75,7 @@ const CiterneFormModal = ({ citerne, onSave, onClose }) => {
         DateInstallation: new Date(formData.DateInstallation).toISOString(),
         TypeCarburant: formData.TypeCarburant,
         Statut: formData.Statut,
-        station: formData.station // Include station in submission
+        station: formData.station
       };
       if (citerne) {
         await citerneService.updateCiterne(citerne._id, submissionData);
@@ -131,15 +131,19 @@ const CiterneFormModal = ({ citerne, onSave, onClose }) => {
           </div>
           <div>
             <label className="block text-sm text-gray-600">Type de Carburant</label>
-            <input
-              type="text"
+            <select
               name="TypeCarburant"
               value={formData.TypeCarburant}
               onChange={handleChange}
               required
               className="w-full p-2 border rounded"
-              placeholder="Ex: Diesel, Gazoile..."
-            />
+            >
+              <option value="">Sélectionner un type</option>
+              <option value="SSPL">SSPL</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Milangeur">Milangeur</option>
+              <option value="VPower">VPower</option>
+            </select>
           </div>
           <div>
             <label className="block text-sm text-gray-600">Station</label>

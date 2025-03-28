@@ -90,6 +90,7 @@ const Ventes = () => {
   });
 
   const totalDebit = ventes.reduce((sum, v) => sum + v.PrixVente, 0);
+  const totalVentes = ventes.reduce((sum, v) => sum + v.QuantiteVente, 0);
 
   return (
     <div className="p-6">
@@ -131,7 +132,11 @@ const Ventes = () => {
             <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-4">
               <div className="p-4 rounded shadow bg-yellow-400 text-black">
                 <div className="text-sm mb-1">Total des Ventes</div>
-                <div className="text-3xl font-bold">{totalDebit} DH</div>
+                <div className="text-3xl font-bold">{totalDebit.toFixed(2)} DH</div>
+              </div>
+              <div className="p-4 rounded shadow bg-green-400 text-black">
+                <div className="text-sm mb-1">Total de la quantité vendue</div>
+                <div className="text-3xl font-bold">{totalVentes}</div>
               </div>
             </div>
             <table className="min-w-full bg-white border rounded-lg text-center">
@@ -140,10 +145,11 @@ const Ventes = () => {
                   <th className="p-3 text-center">Employé</th>
                   <th className="p-3 text-center">Date</th>
                   <th className="p-3 text-center">Type Produit</th>
+                  <th className="p-3 text-center">Nom Produit</th>
                   <th className="p-3 text-center">Prix Vendu</th>
                   <th className="p-3 text-center">Quantité Vendue</th>
                   <th className="p-3 text-center">Mode de Paiement</th>
-                  <th className="p-3 text-center">Station</th> {/* New column */}
+                  <th className="p-3 text-center">Station</th>
                   <th className="p-3 text-center">Actions</th>
                 </tr>
               </thead>
@@ -155,10 +161,11 @@ const Ventes = () => {
                       {new Date(vente.DateVente).toLocaleDateString()}
                     </td>
                     <td className="p-3">{vente.TypeVente}</td>
+                    <td className="p-3">{vente.ProduitNom?.NomProduit || '--'}</td>
                     <td className="p-3">{vente.PrixVente}</td>
                     <td className="p-3">{vente.QuantiteVente}</td>
                     <td className="p-3">{vente.ModePaiement}</td>
-                    <td className="p-3">{vente.station?.NomStation || 'N/A'}</td> {/* Display station */}
+                    <td className="p-3">{vente.station?.NomStation || '--'}</td>
                     <td className="p-3">
                       <div className="flex justify-center space-x-2">
                         <button

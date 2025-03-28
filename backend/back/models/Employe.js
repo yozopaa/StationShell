@@ -42,7 +42,7 @@ const employeSchema = new mongoose.Schema({
     Status: { 
         type: String, 
         required: true,
-        enum: ['Active', 'Inactive'],
+        enum: ['Active', 'Inactive', 'Quitter'],
         default: 'Active'
     },
     station: { 

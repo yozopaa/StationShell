@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { BarChart, Bar, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { citerneService } from '../service/api';
 import CiterneFormModal from './CiterneFormModal';
-import DailyDeclineChart from './DailyDeclineChart';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -12,7 +12,10 @@ const Citerne = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedCiterne, setSelectedCiterne] = useState(null);
-  const [sortOption, setSortOption] = useState(''); // State for station sorting
+  const [selectedStation, setSelectedStation] = useState('');
+  
+  const lineChartRef = useRef(null);
+  const pieChartRef = useRef(null);
 
   useEffect(() => {
     fetchCiternes();
@@ -27,6 +30,33 @@ const Citerne = () => {
       console.error('Error fetching citernes:', err);
       setLoading(false);
     }
+  };
+
+  const uniqueStations = useMemo(() => {
+    const stations = citernes.map(c => c.station?.NomStation).filter(Boolean);
+    return [...new Set(stations)];
+  }, [citernes]);
+
+  // Filter citernes based on selectedStation (if any)
+  const filteredCiternes = useMemo(() => {
+    if (!selectedStation) return citernes;
+    return citernes.filter(c => c.station?.NomStation === selectedStation);
+  }, [citernes, selectedStation]);
+
+  const getChartData = () => {
+    if (!selectedStation) return [];
+    const filtered = citernes.filter(c => c.station?.NomStation === selectedStation);
+    const typeMap = {};
+    filtered.forEach(c => {
+      const type = c.TypeCarburant;
+      const capacity = parseFloat(c.Capacite);
+      if (typeMap[type]) {
+        typeMap[type] += capacity;
+      } else {
+        typeMap[type] = capacity;
+      }
+    });
+    return Object.entries(typeMap).map(([type, capacity]) => ({ type, capacity }));
   };
 
   const handleDelete = async (id) => {
@@ -66,22 +96,22 @@ const Citerne = () => {
     fetchCiternes();
   };
 
-  // Sort citernes based on the selected sort option
-  const sortedCiternes = [...citernes].sort((a, b) => {
-    if (sortOption === 'station-asc') {
-      const stationA = a.station?.NomStation || '';
-      const stationB = b.station?.NomStation || '';
-      return stationA.localeCompare(stationB);
-    } else if (sortOption === 'station-desc') {
-      const stationA = a.station?.NomStation || '';
-      const stationB = b.station?.NomStation || '';
-      return stationB.localeCompare(stationA);
-    }
-    return 0;
-  });
-
   return (
     <div className="p-6">
+      <div className="flex space-x-4 mb-4">
+        {/* Remove the sort select; keep only station selection */}
+        <select
+          value={selectedStation}
+          onChange={(e) => setSelectedStation(e.target.value)}
+          className="border rounded p-2 bg-blue-500 text-white"
+        >
+          <option value="">Choisir une station</option>
+          {uniqueStations.map(station => (
+            <option key={station} value={station}>{station}</option>
+          ))}
+        </select>
+      </div>
+
       <div className="bg-white rounded-lg shadow-md p-6 mb-8 w-full">
         <div className="grid grid-cols-4 gap-4 mb-8">
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -93,7 +123,6 @@ const Citerne = () => {
               </div>
             </div>
           </div>
-          {/* Other fuel type cards remain unchanged */}
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <div className="text-sm text-gray-600 mb-1">Millangeur</div>
             <div className="flex justify-between items-center">
@@ -122,23 +151,27 @@ const Citerne = () => {
             </div>
           </div>
         </div>
-        <div className="relative h-80 w-full overflow-hidden">
-          <DailyDeclineChart />
+
+        {/* Responsive and Colorful Chart Section */}
+        <div className="relative h-96 w-full">
+          {selectedStation ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={getChartData()}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
+                <XAxis dataKey="type" label={{ value: '', position: 'insideBottom', offset: -5 }} />
+                <YAxis label={{ value: '', angle: -90, position: 'insideLeft' }} />
+                <Tooltip formatter={(value) => `${value} L`} />
+                <Legend />
+                <Bar dataKey="capacity" fill="#82ca9d" name="Capacité" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="text-center text-gray-500">Veuillez sélectionner une station pour voir le graphique.</div>
+          )}
         </div>
       </div>
 
       <div className="flex mb-4 items-center justify-between">
-        <div className="flex space-x-2">
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className="border rounded p-2 bg-red-500 text-white"
-          >
-            <option value="">Trier par station</option>
-            <option value="station-asc">Station (A-Z)</option>
-            <option value="station-desc">Station (Z-A)</option>
-          </select>
-        </div>
         <button
           className="bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-900"
           onClick={handleAddClick}
@@ -157,18 +190,18 @@ const Citerne = () => {
                 <th className="p-3 text-left">Capacité (L)</th>
                 <th className="p-3 text-left">Date d'Installation</th>
                 <th className="p-3 text-left">Type de Carburant</th>
-                <th className="p-3 text-left">Station</th> {/* New column */}
+                <th className="p-3 text-left">Station</th>
                 <th className="p-3 text-left">Statut</th>
                 <th className="p-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {sortedCiternes.map((citerne, index) => (
+              {filteredCiternes.map((citerne, index) => (
                 <tr key={index} className="border-b hover:bg-gray-100">
                   <td className="p-3">{citerne.Capacite} L</td>
                   <td className="p-3">{new Date(citerne.DateInstallation).toLocaleDateString()}</td>
                   <td className="p-3">{citerne.TypeCarburant}</td>
-                  <td className="p-3">{citerne.station?.NomStation || 'N/A'}</td> {/* Display station */}
+                  <td className="p-3">{citerne.station?.NomStation || 'N/A'}</td>
                   <td className="p-3 flex items-center justify-center">
                     {citerne.Statut === 'Actif' ? (
                       <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
@@ -194,7 +227,7 @@ const Citerne = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              ))}              
             </tbody>
           </table>
         )}

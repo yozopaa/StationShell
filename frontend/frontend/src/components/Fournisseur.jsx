@@ -80,6 +80,11 @@ function Fournisseur() {
 
   return (
     <div className="p-6">
+      <div>
+       <div className="p-6 rounded w-2/5 m-4 shadow bg-blue-500 text-white">
+          <div className="text-sm mb-1">Nombre de Fournisseur </div>
+          <div className="text-3xl font-bold">{fournisseurs.length}</div>
+        </div></div>
       <div className="flex mb-4 items-center justify-between">
         <div className="flex flex-grow items-center">
           <input

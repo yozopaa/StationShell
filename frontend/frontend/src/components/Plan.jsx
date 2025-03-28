@@ -9,8 +9,8 @@ const Plan = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('');
-  const [selectedDate, setSelectedDate] = useState(null); // New state for selected date
-  const [currentMonth, setCurrentMonth] = useState(new Date()); // Current month for calendar
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
     fetchPlans();
@@ -56,12 +56,35 @@ const Plan = () => {
     setSelectedDate(date);
   };
 
+  // Helper functions for date filtering
+  const isToday = (date) => {
+    const today = new Date();
+    const planDate = new Date(date);
+    return planDate.getDate() === today.getDate() &&
+           planDate.getMonth() === today.getMonth() &&
+           planDate.getFullYear() === today.getFullYear();
+  };
+
+  const isThisWeek = (date) => {
+    const today = new Date();
+    const planDate = new Date(date);
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const endOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 6));
+    return planDate >= startOfWeek && planDate <= endOfWeek;
+  };
+
   // Filter and sort plans
-  const filteredPlans = plans.filter(plan =>
-    (plan.Employee.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    plan.Date.includes(searchQuery)) &&
-    (!selectedDate || plan.Date === selectedDate)
-  );
+  const filteredPlans = plans.filter(plan => {
+    const matchesSearch = plan.Employee.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          plan.Date.includes(searchQuery);
+    if (sortOption === 'today') {
+      return matchesSearch && isToday(plan.Date);
+    } else if (sortOption === 'this-week') {
+      return matchesSearch && isThisWeek(plan.Date);
+    } else {
+      return matchesSearch && (!selectedDate || plan.Date === selectedDate);
+    }
+  });
 
   const sortedPlans = [...filteredPlans].sort((a, b) => {
     if (sortOption === 'station-asc') {
@@ -93,7 +116,6 @@ const Plan = () => {
     const weeks = [];
     let week = Array(7).fill(null);
 
-    // Adjust first day to start on Monday (0 = Sunday, 1 = Monday, etc.)
     const startOffset = firstDay === 0 ? 6 : firstDay - 1;
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -113,7 +135,7 @@ const Plan = () => {
 
   const changeMonth = (delta) => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + delta, 1));
-    setSelectedDate(null); // Reset selected date when changing month
+    setSelectedDate(null);
   };
 
   return (
@@ -127,7 +149,7 @@ const Plan = () => {
         <div className="p-4 rounded shadow bg-green-500 text-white">
           <div className="text-sm mb-1">Plans pour aujourd'hui</div>
           <div className="text-3xl font-bold">
-            {plans.filter(plan => plan.Date === new Date().toISOString().split('T')[0]).length}
+            {plans.filter(plan => isToday(plan.Date)).length}
           </div>
         </div>
       </div>
@@ -147,13 +169,14 @@ const Plan = () => {
             onChange={(e) => setSortOption(e.target.value)}
             className="border rounded bg-red-500 text-white py-2.5 px-2 rounded hover:bg-red-800"
           >
-            <option value="">Trier par station</option>
+            <option value="">Trier par</option>
             <option value="station-asc">Station (A-Z)</option>
             <option value="station-desc">Station (Z-A)</option>
+            <option value="today">Aujourd'hui</option>
+            <option value="this-week">Cette semaine</option>
           </select>
         </div>
         <div className="flex space-x-2">
-          
           <button
             className="bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-900"
             onClick={handleAddClick}

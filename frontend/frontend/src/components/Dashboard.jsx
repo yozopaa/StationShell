@@ -114,7 +114,7 @@ const Dashboard = () => {
     labels: days.map((day) => day.split("-")[2]),
     datasets: [
       {
-        label: 'Sales Amount (DH)',
+        label: 'Montant des ventes (DH)',
         data: salesPerDay,
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
@@ -129,10 +129,10 @@ const Dashboard = () => {
     scales: {
       y: {
         beginAtZero: true,
-        title: { display: true, text: 'Sales Amount (DH)' },
+        title: { display: true, text: 'Montant des ventes (DH' },
       },
       x: {
-        title: { display: true, text: 'Day of Month' },
+        title: { display: true, text: 'Jour par mois' },
       },
     },
   };
@@ -148,7 +148,7 @@ const Dashboard = () => {
     labels: Object.keys(salesByType),
     datasets: [
       {
-        label: 'Sales by Type (DH)',
+        label: 'Montant des ventes par type(DH)',
         data: Object.values(salesByType),
         backgroundColor: [
           'rgba(255, 1, 56, 0.8)',

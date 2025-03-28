@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const produitsSchema = new mongoose.Schema({
     NomProduit: { type: String, required: true }, 
-    Type: { type: String, required: true },       
-    Date_ajout: { type: Date, required: true },   
-    Unite: { type: String, required: true },
+    Type: { type: String, required: true },      
+      Date_ajout: { type: Date, required: true },   
+    Unite: { type: Number, required: true },
       station: { 
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'Station', 
